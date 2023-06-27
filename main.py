@@ -9,7 +9,7 @@ import pytz
 # Singapore time
 utc_time = datetime.utcnow()
 utc_plus_eight = pytz.timezone('Etc/GMT-8')
-formatted_datetime = utc_time.replace(tzinfo=pytz.utc).astimezone(utc_plus_eight).strftime("%Y-%m-%d-%H:%M:%S")
+formatted_datetime = utc_time.replace(tzinfo=pytz.utc).astimezone(utc_plus_eight).strftime("%Y-%m-%d-%H_%M")
 this_folder = os.path.dirname(os.path.abspath(__file__))
 
 def scrape():
@@ -65,7 +65,8 @@ if __name__ == "__main__":
 
     # regex to filter sources
     count = 0
+    names = ["tuas-jb-sg", "tuas-sg-jb", "cw-jb-sg", "cw-sg-jb"]
     for source in sources:
-        file_path = download_image(f"https:{source}", f"{this_folder}/outputs/{formatted_datetime}", f"{formatted_datetime}-{count}.png")
+        file_path = download_image(f"https:{source}", f"{this_folder}/outputs/{formatted_datetime}", f"{names[count]}.png")
         count += 1
 
