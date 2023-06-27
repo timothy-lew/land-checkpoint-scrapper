@@ -4,8 +4,12 @@ from datetime import datetime
 import os
 import subprocess
 import configparser
+import pytz
 
-formatted_datetime = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+# Singapore time
+utc_time = datetime.utcnow()
+utc_plus_eight = pytz.timezone('Etc/GMT-8')
+formatted_datetime = utc_time.replace(tzinfo=pytz.utc).astimezone(utc_plus_eight).strftime("%Y-%m-%d-%H:%M:%S")
 this_folder = os.path.dirname(os.path.abspath(__file__))
 
 def scrape():
