@@ -7,6 +7,11 @@ import configparser
 import pytz
 from PIL import Image, ImageDraw, ImageFont
 
+# telegram bot
+import asyncio
+from telegram import Bot, InputMediaPhoto
+from telegram.error import TelegramError
+
 # Singapore time
 utc_time = datetime.utcnow()
 utc_plus_eight = pytz.timezone('Etc/GMT-8')
@@ -74,6 +79,16 @@ def writeDate(file_path, text):
 
     image.save(file_path)
 
+async def sendImages(image_paths):
+    bot_token = config.get('Telegram', 'bot_token')
+    chat_id = config.get('Telegram', 'chat_id')
+
+    bot = Bot(token=bot_token)
+    try:
+        media = [InputMediaPhoto(open(image_path, 'rb')) for image_path in image_paths]
+        await bot.send_media_group(chat_id=chat_id, media=media)
+    except TelegramError as e:
+        print(f"Failed to send image: {e}")
 
 if __name__ == "__main__":
     # scrape data
@@ -99,8 +114,12 @@ if __name__ == "__main__":
     count = 0
     names = ["tuas-jb-sg", "tuas-sg-jb", "cw-jb-sg", "cw-sg-jb"]
     print(dates)
+    image_paths = []
     for source in sources:
         file_path = downloadImage(f"https:{source}", f"{this_folder}/outputs/{formatted_datetime}", f"{names[count]}.png")
+        image_paths.append(file_path)
         writeDate(file_path, dates[count])
         count += 1
 
+    asyncio.run(sendImages(image_paths))
+    

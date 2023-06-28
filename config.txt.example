@@ -4,3 +4,7 @@ grep = XXX
 
 [Local]
 font = /x/y.ttf
+
+[Telegram]
+bot_token = xxx
+chat_id = xxx
