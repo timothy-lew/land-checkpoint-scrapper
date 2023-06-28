@@ -15,12 +15,12 @@ this_folder = os.path.dirname(os.path.abspath(__file__))
 
 # read from config file
 config = configparser.ConfigParser()
+
+# get path of config.txt
 config_file = os.path.join(this_folder, 'config.txt')
 config.read(config_file)
 
 def scrape():
-    # get path of config.txt
-
     endpoint = config.get('LTA', 'endpoint')
     grep = config.get('LTA', 'grep')
 
@@ -61,9 +61,16 @@ def writeDate(file_path, text):
 
     # Define the text position
     position = (50, 50)
-
     text_color = (255, 255, 255)  # White color
-    draw.text(position, text, font=font, fill=text_color)
+    
+    outline_color = (0, 0, 0)  # Black color
+    outline_width = 6
+
+    # Draw the text outline
+    for dx in range(-outline_width, outline_width + 1):
+        for dy in range(-outline_width, outline_width + 1):
+            draw.text((position[0] + dx, position[1] + dy), text, font=font, fill=outline_color)
+        draw.text(position, text, font=font, fill=text_color)
 
     image.save(file_path)
 
@@ -74,6 +81,7 @@ if __name__ == "__main__":
     sources = []
     dates = []
 
+    # regex to filter sources and dates
     pattern_image = r'src=["\']([^"\']+)["\']'
     pattern_date = r'<span class="left">(\w{3} \w{3} \d{1,2} \d{2}:\d{2}:\d{2} \w{3} \d{4})</span>'
 
@@ -88,7 +96,6 @@ if __name__ == "__main__":
             if match:
                 dates.append(match.group(1))
 
-    # regex to filter sources
     count = 0
     names = ["tuas-jb-sg", "tuas-sg-jb", "cw-jb-sg", "cw-sg-jb"]
     print(dates)
