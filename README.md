@@ -1,4 +1,4 @@
-## 📌 How to Start
+## 📌 MacOS start up
 
 Run the following commands in your terminal window:
 
