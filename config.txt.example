@@ -1,3 +1,6 @@
 [LTA]
 endpoint = XXX
 grep = XXX
+
+[Local]
+font = /x/y.ttf
