@@ -12,11 +12,14 @@ import asyncio
 from telegram import Bot, InputMediaPhoto
 from telegram.error import TelegramError
 
+import shutil
+
 # Singapore time
 utc_time = datetime.utcnow()
 utc_plus_eight = pytz.timezone('Etc/GMT-8')
 formatted_datetime = utc_time.replace(tzinfo=pytz.utc).astimezone(utc_plus_eight).strftime("%Y-%m-%d-%H_%M")
 this_folder = os.path.dirname(os.path.abspath(__file__))
+output_directory = f"{this_folder}/outputs/{formatted_datetime}"
 
 # read from config file
 config = configparser.ConfigParser()
@@ -90,6 +93,13 @@ async def sendImages(image_paths):
     except TelegramError as e:
         print(f"Failed to send image: {e}")
 
+def deleteDirectory(directory_path):
+    try:
+        shutil.rmtree(directory_path)
+        print("Directory deleted successfully.")
+    except OSError as e:
+        print(f"Error occurred while deleting the directory: {e}")
+
 if __name__ == "__main__":
     # scrape data
     scrape()
@@ -101,7 +111,7 @@ if __name__ == "__main__":
     pattern_date = r'<span class="left">(\w{3} \w{3} \d{1,2} \d{2}:\d{2}:\d{2} \w{3} \d{4})</span>'
 
     # read output file after scrapping
-    with open(f"{this_folder}/outputs/{formatted_datetime}/output.txt", 'r') as file:
+    with open(f"{output_directory}/output.txt", 'r') as file:
         for line in file:
             line = line.strip()  # Remove leading/trailing whitespaces and newline characters
             match = re.search(pattern_image, line)
@@ -116,10 +126,11 @@ if __name__ == "__main__":
     print(dates)
     image_paths = []
     for source in sources:
-        file_path = downloadImage(f"https:{source}", f"{this_folder}/outputs/{formatted_datetime}", f"{names[count]}.png")
+        file_path = downloadImage(f"https:{source}", f"{output_directory}", f"{names[count]}.png")
         image_paths.append(file_path)
         writeDate(file_path, dates[count])
         count += 1
 
     asyncio.run(sendImages(image_paths))
+    deleteDirectory(f"{output_directory}")
     
